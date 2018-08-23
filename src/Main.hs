@@ -50,11 +50,11 @@ main = runInputT defaultSettings $ loop emptyBoard
               Left error -> do outputStrLn error
                                outputStrLn "Please try again."
                                loop board
-              Right new -> do liftIO clearScreen
+              Right new -> do outputStr clearScreenCode
                               outputStrLn "Start the battle."
-                              loop new
+                              loop new 
           | otherwise -> do outputStrLn $ "Input was: " ++ input
-                            loop board
+                            loop board 
 
 placeShip :: Board -> Int -> Int -> Either String Board
 placeShip (Board battleStarted board) x y

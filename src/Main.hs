@@ -34,6 +34,16 @@ main = runInputT defaultSettings $ loop emptyBoard
                 Right new  -> loop new
               Nothing -> do outputStrLn "Invalid input (x,y)."
                             loop board
+          | isPrefixOf "bomb " input -> case readMaybe (drop 6 input) of
+            Just (x,y) -> case bomb board x y of
+              Left error -> do outputStrLn error
+                               outputStrLn "Please try again."
+                               loop board
+              Right (hit, new) -> do
+                outputStrLn $ if hit then "Hit" else "Miss"
+                loop new
+            Nothing -> do outputStrLn "Invalid input (x,y)."
+                          loop board
           | isPrefixOf "start" input -> case startBattle board of
               Left error -> do outputStrLn error
                                outputStrLn "Please try again."
@@ -41,7 +51,7 @@ main = runInputT defaultSettings $ loop emptyBoard
               Right new -> do outputStrLn "Start the battle."
                               loop new
           | otherwise -> do outputStrLn $ "Input was: " ++ input
-                            loop board
+                            loop boardTrue
 
 placeShip :: Board -> Int -> Int -> Either String Board
 placeShip (Board battleStarted board) x y
@@ -69,3 +79,14 @@ startBattle :: Board -> Either String Board
 startBattle (Board battleStarted rows)
   | battleStarted = Left "Battle already started."
   | otherwise     = Right $ Board True rows
+
+bomb :: Board -> Int -> Int -> Either String (Bool, Board)
+bomb (Board battleStarted board) x y
+  | x < 0 || x > 9 || y < 0 || y > 9 = Left "Out of bounds."
+  | not battleStarted = Left "Battle not yet started"
+  | otherwise = 
+    let (pre, row:post) = splitAt y board
+        (rpre, cell:rpost) = splitAt x row
+    in case cell of
+      CellState _ True -> Left "Already bombed"
+      CellState hasShip _ -> Right $ (hasShip, Board False $ pre ++ [rpre ++ [CellState hasShip False] ++ rpost] ++ post)

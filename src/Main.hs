@@ -20,7 +20,7 @@ main = runInputT defaultSettings $ loop emptyBoard
   where
     loop :: Board -> InputT IO ()
     loop board@(Board battleStarted rows) = do
-      outputStr $ displayBoard (not battleStarted) board
+      outputStr $ displayBoard battleStarted board
       minput <- getInputLine "% "
       case minput of
         Nothing -> return ()

@@ -34,7 +34,7 @@ main = runInputT defaultSettings $ loop emptyBoard
                 Right new  -> loop new
               Nothing -> do outputStrLn "Invalid input (x,y)."
                             loop board
-          | isPrefixOf "bomb " input -> case readMaybe (drop 6 input) of
+          | isPrefixOf "bomb " input -> case readMaybe (drop 5 input) of
             Just (x,y) -> case bomb board x y of
               Left error -> do outputStrLn error
                                outputStrLn "Please try again."

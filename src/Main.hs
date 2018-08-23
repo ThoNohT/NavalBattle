@@ -34,6 +34,9 @@ setBoard (Game Bombing Player1 b _) new = Game Bombing Player1 b new
 setBoard (Game Placing Player2 b _) new = Game Placing Player2 b new
 setBoard (Game Bombing Player2 _ b) new = Game Bombing Player2 new b
 
+switchPlayer :: Game -> Game
+switchPlayer (Game a Player1 b c) = Game a Player2 b c
+switchPlayer (Game a Player2 b c) = Game a Player1 b c
 
 main :: IO ()
 main = runInputT defaultSettings $ loop newGame
@@ -58,7 +61,7 @@ main = runInputT defaultSettings $ loop newGame
             then do
               outputStrLn "The battle is not yet started."
               loop game
-            else handleBomb input opponentBoard >>= loop . setBoard game
+            else handleBomb input opponentBoard >>= loop . switchPlayer . setBoard game
           | isPrefixOf "start" input -> handleStart game >>= loop
           | otherwise -> loop game 
 

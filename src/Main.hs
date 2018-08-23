@@ -1,8 +1,10 @@
 module Main where
 
+import Control.Monad.IO.Class
 import Data.List
 import Data.Maybe (Maybe)
 import Text.Read (readMaybe)
+import System.Console.ANSI
 import System.Console.Haskeline
 
 
@@ -48,7 +50,8 @@ main = runInputT defaultSettings $ loop emptyBoard
               Left error -> do outputStrLn error
                                outputStrLn "Please try again."
                                loop board
-              Right new -> do outputStrLn "Start the battle."
+              Right new -> do liftIO clearScreen
+                              outputStrLn "Start the battle."
                               loop new
           | otherwise -> do outputStrLn $ "Input was: " ++ input
                             loop board

@@ -2,6 +2,7 @@ module Main where
 
 import Data.List
 import Data.Maybe (Maybe)
+import Text.Read (readMaybe)
 import System.Console.Haskeline
 
 
@@ -25,13 +26,14 @@ main = runInputT defaultSettings $ loop emptyBoard
         Nothing -> return ()
         Just "quit" -> return ()
         Just input
-          | isPrefixOf "place " input ->
-            let (x,y) = read (drop 6 input)
-            in case placeShip board x y of
-              Left error -> do outputStrLn error
-                               outputStrLn "Please try again."
-                               loop board
-              Right new  -> loop new
+          | isPrefixOf "place " input -> case readMaybe (drop 6 input) of
+              Just (x,y) -> case placeShip board x y of
+                Left error -> do outputStrLn error
+                                 outputStrLn "Please try again."
+                                 loop board
+                Right new  -> loop new
+              Nothing -> do outputStrLn "Invalid input (x,y)."
+                            loop board
           | isPrefixOf "start" input -> case startBattle board of
               Left error -> do outputStrLn error
                                outputStrLn "Please try again."
@@ -40,7 +42,6 @@ main = runInputT defaultSettings $ loop emptyBoard
                               loop new
           | otherwise -> do outputStrLn $ "Input was: " ++ input
                             loop board
-
 
 placeShip :: Board -> Int -> Int -> Either String Board
 placeShip (Board battleStarted board) x y

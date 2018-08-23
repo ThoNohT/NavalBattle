@@ -51,7 +51,7 @@ main = runInputT defaultSettings $ loop emptyBoard
               Right new -> do outputStrLn "Start the battle."
                               loop new
           | otherwise -> do outputStrLn $ "Input was: " ++ input
-                            loop boardTrue
+                            loop board
 
 placeShip :: Board -> Int -> Int -> Either String Board
 placeShip (Board battleStarted board) x y

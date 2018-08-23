@@ -89,4 +89,4 @@ bomb (Board battleStarted board) x y
         (rpre, cell:rpost) = splitAt x row
     in case cell of
       CellState _ True -> Left "Already bombed"
-      CellState hasShip _ -> Right $ (hasShip, Board False $ pre ++ [rpre ++ [CellState hasShip False] ++ rpost] ++ post)
+      CellState hasShip _ -> Right $ (hasShip, Board True $ pre ++ [rpre ++ [CellState hasShip True] ++ rpost] ++ post)

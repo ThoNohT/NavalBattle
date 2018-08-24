@@ -17,7 +17,7 @@ type Board = [ [ CellState ] ]
 
 data Phase = Placing | Bombing deriving (Eq)
 data Player = Player1 | Player2
-data Game = Game Phase Player Board Board 
+data Game = Game Phase Player Board Board
 
 newGame :: Game
 newGame = Game Placing Player1 emptyBoard emptyBoard
@@ -42,11 +42,11 @@ main :: IO ()
 main = runInputT defaultSettings $ loop newGame
   where
     loop :: Game -> InputT IO ()
-    loop game@(Game phase _ _ _) = let (ownBoard, opponentBoard) = getBoard game in      
+    loop game@(Game phase _ _ _) = let (ownBoard, opponentBoard) = getBoard game in
       do
-      outputStrLn $ displayBoard False opponentBoard
+      outputStrLn $ displayBoard True opponentBoard
       outputStrLn $ replicate 10 '#'
-      outputStrLn $ displayBoard True ownBoard
+      outputStrLn $ displayBoard False ownBoard
       minput <- getInputLine "% "
       case minput of
         Nothing -> return ()
@@ -63,7 +63,7 @@ main = runInputT defaultSettings $ loop newGame
               loop game
             else handleBomb input opponentBoard >>= loop . switchPlayer . setBoard game
           | isPrefixOf "start" input -> handleStart game >>= loop
-          | otherwise -> loop game 
+          | otherwise -> loop game
 
 handlePlace :: String -> Board -> InputT IO Board
 handlePlace input board =
@@ -96,13 +96,13 @@ handleStart game = case startBattle game of
                    return game
   Right new -> do outputStr clearScreenCode
                   outputStrLn "Start the battle."
-                  return new 
+                  return new
 
 
 placeShip :: Board -> Int -> Int -> Either String Board
 placeShip board x y
       | x < 0 || x > 9 || y < 0 || y > 9 = Left "Out of bounds."
-      | otherwise = 
+      | otherwise =
         let (pre, row:post) = splitAt y board
             (rpre, cell:rpost) = splitAt x row
         in case cell of
@@ -131,7 +131,7 @@ startBattle (Game Bombing _ b1 b2) = Left "Battle already started."
 bomb :: Board -> Int -> Int -> Either String (Bool, Board)
 bomb board x y
   | x < 0 || x > 9 || y < 0 || y > 9 = Left "Out of bounds."
-  | otherwise = 
+  | otherwise =
     let (pre, row:post) = splitAt y board
         (rpre, cell:rpost) = splitAt x row
     in case cell of
